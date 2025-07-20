@@ -15,18 +15,18 @@ return new class extends Migration
 {
     Schema::create('rapports', function (Blueprint $table) {
     $table->id();
-    $table->dateTime('date');
+    $table->date('date');
     $table->text('activiteGene');
     $table->text('remarque');
-    $table->integer('nbPers');
-    $table->text('visite');
-    $table->text('remarqueFait');
+    $table->integer('nbPres');
+    $table->integer('visite');
+    $table->text('remarqueFait'); 
     $table->integer('kits');
     $table->integer('nbPersVisitSem');
-    $table->string('nEnreg');
-    $table->string('depart');
-    $table->string('transfert');
-    $table->text('casMaladie');
+    $table->integer('nouvelEnreg');
+    $table->integer('depart');
+    $table->integer('transfert');
+    $table->integer ('casMaladie');
     $table->string('superviseur');
     $table->timestamps();
 });

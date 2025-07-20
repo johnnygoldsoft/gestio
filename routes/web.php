@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RapportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,5 +22,13 @@ Route::post('/' , [AuthController::class, 'handlelogin' ])->name('handlelogin');
 
 //route secure
 
+Route::middleware('auth')->group(function() {
+Route::get('dashboard', [AppController::class, 'index'])->name('dashboard');
 
- Route::get('dashboard', [AppController::class, 'index'])->name('dashboard');
+
+
+Route::resource('rapports', RapportController::class);
+Route::get('rapports/{id}/export-pdf', [RapportController::class, 'exportPdf'])->name('rapports.exportPdf');
+
+});
+
