@@ -17,7 +17,7 @@
 			   
 			            
 			            <div class="app-utility-item app-user-dropdown dropdown">
-				            <a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><img src="assets/images/user.png" alt="user profile"></a>
+				            <a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><img src="https://ui-avatars.com/api/?name={{ Auth()->user()->name }}" alt="user profile" style="border-radius: 50%"></a>
 				            <ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
 								<li><a class="dropdown-item" href="account.html">Compte</a></li>
 								<li><a class="dropdown-item" href="settings.html">Paramettre</a></li>

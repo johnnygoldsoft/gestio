@@ -38,17 +38,25 @@
 									</a>
 							    </div>
 						    </div><!--//row-->
+
+
+							
+
+
 					    </div><!--//table-utilities-->
 				    </div><!--//col-auto-->
 			    </div><!--//row-->
+
+
+				@if (Session::get('success'))
+							<div class="alert alert-success">
+								{{ Session::get('success') }}
+							</div>
+							
+							@endif
 			   
 			    
-			    <nav id="orders-table-tab" class="orders-table-tab app-nav-tabs nav shadow-sm flex-column flex-sm-row mb-4">
-				    <a class="flex-sm-fill text-sm-center nav-link active" id="orders-all-tab" data-bs-toggle="tab" href="#orders-all" role="tab" aria-controls="orders-all" aria-selected="true">Tous les rapports</a>
-				    <a class="flex-sm-fill text-sm-center nav-link"  id="orders-paid-tab" data-bs-toggle="tab" href="#orders-paid" role="tab" aria-controls="orders-paid" aria-selected="false">En cours</a>
-				    <a class="flex-sm-fill text-sm-center nav-link" id="orders-pending-tab" data-bs-toggle="tab" href="#orders-pending" role="tab" aria-controls="orders-pending" aria-selected="false">Valider</a>
-				</nav>
-				
+			   
 				
 				<div class="tab-content" id="orders-table-tab-content">
 			        <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
@@ -57,208 +65,121 @@
 							    <div class="table-responsive">
 							        <table class="table app-table-hover mb-0 text-left">
 										<thead>
-											<tr>
-												<th class="cell">Id</th>
-												<th class="cell">Date</th>
-												<th class="cell">AG</th>
-												<th class="cell">Remarque</th>
-												<th class="cell">NB Presence</th>
-												<th class="cell">Visite</th>
-                                                <th class="cell">Remarq fait</th>
-												<th class="cell">Kits</th>
-												<th class="cell">Nb persone</th>
-												<th class="cell">NB Perso</th>
-												<th class="cell">Nouvel enreg</th>
-                                                <th class="cell">Depart</th>
-												<th class="cell">Transfert</th>
-												<th class="cell">Cas de maladie</th>
-												<th class="cell">Superviseur</th>
-												<th class="cell"></th>
-											</tr>
-										</thead>
+    <tr>
+        <th class="cell">ID</th>
+        <th class="cell">Date</th>
+        <th class="cell">Activité Générale</th>
+        <th class="cell">Remarque</th>
+        <th class="cell">Présents</th>
+        <th class="cell">Visites</th>
+        <th class="cell">Remarques faites</th>
+        <th class="cell">Kits</th>
+        <th class="cell">Visites Semaine</th>
+        <th class="cell">Nouveaux Enregs</th>
+        <th class="cell">Départs</th>
+        <th class="cell">Transferts</th>
+        <th class="cell">Maladies</th>
+        <th class="cell">Superviseur</th>
+        <th class="cell">Actions</th>
+    </tr>
+</thead>
+
 										<tbody>
 
                                         @forelse ($rapports as $rapport)
+<tr>
+    <td class="cell">{{ $rapport->id }}</td>
+    <td class="cell">{{ \Carbon\Carbon::parse($rapport->date)->format('d/m/Y') }}</td>
+    <td class="cell">{{ $rapport->activiteGene }}</td>
+    <td class="cell">{{ $rapport->remarque }}</td>
+    <td class="cell">{{ $rapport->nbPres }}</td>
+    <td class="cell">{{ $rapport->visite }}</td>
+    <td class="cell">{{ $rapport->remarqueFait }}</td>
+    <td class="cell">{{ $rapport->kits }}</td>
+    <td class="cell">{{ $rapport->nbPersVisitSem }}</td>
+    <td class="cell">{{ $rapport->nouvelEnreg }}</td>
+    <td class="cell">{{ $rapport->depart }}</td>
+    <td class="cell">{{ $rapport->transfert }}</td>
+    <td class="cell">{{ $rapport->casMaladie }}</td>
+    <td class="cell">{{ $rapport->superviseur }}</td>
+    <td class="cell">
+        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#rapportModal{{ $rapport->id }}">
+    Voir
+</button>
 
-                                        <tr>
-												<td class="cell">#15346</td>
-												<td class="cell"><span class="truncate">Lorem ipsum dolor sit amet eget volutpat erat</span></td>
-												<td class="cell">John Sanders</td>
-												<td class="cell"><span>17 Oct</span><span class="note">2:16 PM</span></td>
-												<td class="cell"><span class="badge bg-success">Paid</span></td>
-												<td class="cell">$259.35</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-											
+        <a href="{{ route('rapports.edit', $rapport->id) }}" class="btn btn-sm btn-warning">Modifier</a>
+		<a href="{{ route('rapports.pdf', $rapport->id) }}" class="btn btn-sm btn-success">
+    <i class="fa fa-file-pdf"></i> Télécharger PDF
+</a>
 
-                                        @empty
+        <form action="{{ route('rapports.destroy', $rapport->id) }}" method="POST" class="d-inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce rapport ?')">Supprimer</button>
+        </form>
+    </td>
+</tr>
 
-                                        <tr>
-                                            <td class="cell" colspan="16">Aucun rapport ajouter ...</td>
+<!-- Modal -->
+<div class="modal fade" id="rapportModal{{ $rapport->id }}" tabindex="-1" aria-labelledby="rapportModalLabel{{ $rapport->id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rapportModalLabel{{ $rapport->id }}">Détail du Rapport #{{ $rapport->id }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Date :</strong> {{ $rapport->date }}</li>
+          <li class="list-group-item"><strong>Activité Générale :</strong> {{ $rapport->activiteGene }}</li>
+          <li class="list-group-item"><strong>Remarque :</strong> {{ $rapport->remarque }}</li>
+          <li class="list-group-item"><strong>Présences :</strong> {{ $rapport->nbPres }}</li>
+          <li class="list-group-item"><strong>Visite :</strong> {{ $rapport->visite }}</li>
+          <li class="list-group-item"><strong>Remarques faites :</strong> {{ $rapport->remarqueFait }}</li>
+          <li class="list-group-item"><strong>Kits :</strong> {{ $rapport->kits }}</li>
+          <li class="list-group-item"><strong>Nb personnes visitées :</strong> {{ $rapport->nbPersVisitSem }}</li>
+          <li class="list-group-item"><strong>Nouveaux enregistrés :</strong> {{ $rapport->nouvelEnreg }}</li>
+          <li class="list-group-item"><strong>Départs :</strong> {{ $rapport->depart }}</li>
+          <li class="list-group-item"><strong>Transferts :</strong> {{ $rapport->transfert }}</li>
+          <li class="list-group-item"><strong>Cas maladie :</strong> {{ $rapport->casMaladie }}</li>
+          <li class="list-group-item"><strong>Superviseur :</strong> {{ $rapport->superviseur }}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+@empty
+<tr>
+    <td colspan="15" class="text-center">Aucun rapport trouvé.</td>
+</tr>
+@endforelse
 
-                                        </tr>
-
-
-                                        @endforelse
 
 											
 		
 										</tbody>
 									</table>
+
+									
+
 						        </div><!--//table-responsive-->
 						       
 						    </div><!--//app-card-body-->		
 						</div><!--//app-card-->
 						<nav class="app-pagination">
-							<ul class="pagination justify-content-center">
-								<li class="page-item disabled">
-									<a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-							    </li>
-								<li class="page-item active"><a class="page-link" href="#">1</a></li>
-								<li class="page-item"><a class="page-link" href="#">2</a></li>
-								<li class="page-item"><a class="page-link" href="#">3</a></li>
-								<li class="page-item">
-								    <a class="page-link" href="#">Next</a>
-								</li>
-							</ul>
+							<div class="d-flex justify-content-center mt-3">
+    {{ $rapports->links() }}
+</div>
 						</nav><!--//app-pagination-->
 						
 			        </div><!--//tab-pane-->
 			        
-			        <div class="tab-pane fade" id="orders-paid" role="tabpanel" aria-labelledby="orders-paid-tab">
-					    <div class="app-card app-card-orders-table mb-5">
-						    <div class="app-card-body">
-							    <div class="table-responsive">
-								    
-							        <table class="table mb-0 text-left">
-										<thead>
-											<tr>
-												<th class="cell">Order</th>
-												<th class="cell">Product</th>
-												<th class="cell">Customer</th>
-												<th class="cell">Date</th>
-												<th class="cell">Status</th>
-												<th class="cell">Total</th>
-												<th class="cell"></th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td class="cell">#15346</td>
-												<td class="cell"><span class="truncate">Lorem ipsum dolor sit amet eget volutpat erat</span></td>
-												<td class="cell">John Sanders</td>
-												<td class="cell"><span>17 Oct</span><span class="note">2:16 PM</span></td>
-												<td class="cell"><span class="badge bg-success">Paid</span></td>
-												<td class="cell">$259.35</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-											
-											<tr>
-												<td class="cell">#15344</td>
-												<td class="cell"><span class="truncate">Pellentesque diam imperdiet</span></td>
-												<td class="cell">Teresa Holland</td>
-												<td class="cell"><span class="cell-data">16 Oct</span><span class="note">01:16 AM</span></td>
-												<td class="cell"><span class="badge bg-success">Paid</span></td>
-												<td class="cell">$123.00</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-											
-											<tr>
-												<td class="cell">#15343</td>
-												<td class="cell"><span class="truncate">Vestibulum a accumsan lectus sed mollis ipsum</span></td>
-												<td class="cell">Jayden Massey</td>
-												<td class="cell"><span class="cell-data">15 Oct</span><span class="note">8:07 PM</span></td>
-												<td class="cell"><span class="badge bg-success">Paid</span></td>
-												<td class="cell">$199.00</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-										
-											
-											<tr>
-												<td class="cell">#15341</td>
-												<td class="cell"><span class="truncate">Morbi vulputate lacinia neque et sollicitudin</span></td>
-												<td class="cell">Raymond Atkins</td>
-												<td class="cell"><span class="cell-data">11 Oct</span><span class="note">11:18 AM</span></td>
-												<td class="cell"><span class="badge bg-success">Paid</span></td>
-												<td class="cell">$678.26</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-		
-										</tbody>
-									</table>
-						        </div><!--//table-responsive-->
-						    </div><!--//app-card-body-->		
-						</div><!--//app-card-->
-			        </div><!--//tab-pane-->
 			        
-			        <div class="tab-pane fade" id="orders-pending" role="tabpanel" aria-labelledby="orders-pending-tab">
-					    <div class="app-card app-card-orders-table mb-5">
-						    <div class="app-card-body">
-							    <div class="table-responsive">
-							        <table class="table mb-0 text-left">
-										<thead>
-											<tr>
-												<th class="cell">Order</th>
-												<th class="cell">Product</th>
-												<th class="cell">Customer</th>
-												<th class="cell">Date</th>
-												<th class="cell">Status</th>
-												<th class="cell">Total</th>
-												<th class="cell"></th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td class="cell">#15345</td>
-												<td class="cell"><span class="truncate">Consectetur adipiscing elit</span></td>
-												<td class="cell">Dylan Ambrose</td>
-												<td class="cell"><span class="cell-data">16 Oct</span><span class="note">03:16 AM</span></td>
-												<td class="cell"><span class="badge bg-warning">Pending</span></td>
-												<td class="cell">$96.20</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-										</tbody>
-									</table>
-						        </div><!--//table-responsive-->
-						    </div><!--//app-card-body-->		
-						</div><!--//app-card-->
-			        </div><!--//tab-pane-->
-			        <div class="tab-pane fade" id="orders-cancelled" role="tabpanel" aria-labelledby="orders-cancelled-tab">
-					    <div class="app-card app-card-orders-table mb-5">
-						    <div class="app-card-body">
-							    <div class="table-responsive">
-							        <table class="table mb-0 text-left">
-										<thead>
-											<tr>
-												<th class="cell">Order</th>
-												<th class="cell">Product</th>
-												<th class="cell">Customer</th>
-												<th class="cell">Date</th>
-												<th class="cell">Status</th>
-												<th class="cell">Total</th>
-												<th class="cell"></th>
-											</tr>
-										</thead>
-										<tbody>
-											
-											<tr>
-												<td class="cell">#15342</td>
-												<td class="cell"><span class="truncate">Justo feugiat neque</span></td>
-												<td class="cell">Reina Brooks</td>
-												<td class="cell"><span class="cell-data">12 Oct</span><span class="note">04:23 PM</span></td>
-												<td class="cell"><span class="badge bg-danger">Cancelled</span></td>
-												<td class="cell">$59.00</td>
-												<td class="cell"><a class="btn-sm app-btn-secondary" href="#">View</a></td>
-											</tr>
-											
-										</tbody>
-									</table>
-						        </div><!--//table-responsive-->
-						    </div><!--//app-card-body-->		
-						</div><!--//app-card-->
-			        </div><!--//tab-pane-->
-				</div><!--//tab-content-->
+			        
 				
 
 @endsection

@@ -16,7 +16,17 @@
 						    
 						    <div class="app-card-body">
     <form class="settings-form" method="POST" action="{{ route('rapports.store') }}">
+
         @csrf
+        @method('POST')
+
+
+        @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 
         {{-- Date --}}
         <div class="mb-3">

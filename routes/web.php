@@ -28,7 +28,7 @@ Route::get('dashboard', [AppController::class, 'index'])->name('dashboard');
 
 
 Route::resource('rapports', RapportController::class);
-Route::get('rapports/{id}/export-pdf', [RapportController::class, 'exportPdf'])->name('rapports.exportPdf');
+Route::get('/rapports/{id}/pdf', [RapportController::class, 'generatePdf'])->name('rapports.pdf');
 
 });
 
