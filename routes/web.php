@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/' , [AuthController::class, 'handlelogin' ])->name('handlelogin');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
 
 
 //route secure
@@ -29,6 +32,8 @@ Route::get('dashboard', [AppController::class, 'index'])->name('dashboard');
 
 Route::resource('rapports', RapportController::class);
 Route::get('/rapports/{id}/pdf', [RapportController::class, 'generatePdf'])->name('rapports.pdf');
+Route::get('/rapports/imprimer/mois/{mois}/{annee}', [RapportController::class, 'imprimerParMois'])->name('rapports.imprimerParMois');
+
 
 });
 

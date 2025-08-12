@@ -19,10 +19,18 @@
 			            <div class="app-utility-item app-user-dropdown dropdown">
 				            <a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><img src="https://ui-avatars.com/api/?name={{ Auth()->user()->name }}" alt="user profile" style="border-radius: 50%"></a>
 				            <ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
-								<li><a class="dropdown-item" href="account.html">Compte</a></li>
-								<li><a class="dropdown-item" href="settings.html">Paramettre</a></li>
-								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="login.html">Se deconnecter</a></li>
+								<!-- <li><a class="dropdown-item" href="">Compte</a></li>
+								<li><a class="dropdown-item" href="">Paramettre</a></li>
+								<li><hr class="dropdown-divider"></li> -->
+								<li>
+  <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+    @csrf
+    <button type="submit" class="dropdown-item" style="background:none; border:none; padding:0; margin:0; cursor:pointer;">
+      Se déconnecter
+    </button>
+  </form>
+</li>
+
 							</ul>
 			            </div><!--//app-user-dropdown--> 
 		            </div><!--//app-utilities-->

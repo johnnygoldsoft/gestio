@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRapportRequest extends FormRequest
 {
@@ -22,7 +23,11 @@ class UpdateRapportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => 'required|date',
+            'date' => [
+            'required',
+            'date',
+            Rule::unique('rapports', 'date')->ignore($this->rapport),
+        ],
             'activiteGene' => 'required|string',
             'remarque' => 'nullable|string',
             'nbPres' => 'nullable|integer',
@@ -41,6 +46,7 @@ class UpdateRapportRequest extends FormRequest
     public function messages(): array
 {
     return [
+        'date.unique' => 'Un autre rapport avec cette date existe déjà.',
         'date.required' => 'La date est obligatoire.',
         'date.date' => 'Le format de la date est invalide.',
 

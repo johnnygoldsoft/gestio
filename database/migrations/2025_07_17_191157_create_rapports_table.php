@@ -18,7 +18,6 @@ return new class extends Migration
     $table->date('date');
     $table->unsignedTinyInteger('mois');
     $table->unsignedSmallInteger('annee');
-    $table->unique(['mois', 'annee']);
     $table->text('activiteGene');
     $table->text('remarque');
     $table->integer('nbPres');

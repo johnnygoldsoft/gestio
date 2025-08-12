@@ -1,4 +1,5 @@
 
+
 @extends('layouts.template')
 
 @section('content')
@@ -12,40 +13,56 @@
 					     <div class="page-utilities">
 						    <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
 							    <div class="col-auto">
-								    <form class="table-search-form row gx-1 align-items-center">
-					                    <div class="col-auto">
-					                        <input type="text" id="search-orders" name="searchorders" class="form-control search-orders" placeholder="Recherche">
-					                    </div>
-					                    <div class="col-auto">
-					                        <button type="submit" class="btn app-btn-secondary">Recherche</button>
-					                    </div>
-					                </form>
+
+
+                                
+
+
+                                    
 					                
-							    </div><!--//col-->
-							    <div class="col-auto">
-								    
-								    <select class="form-select w-auto" >
-										  <option selected value="option-1">Tous</option>
-										  <option value="option-2">Ce mois</option>
-										  <option value="option-3">Cette Années</option>
-										  
-									</select>
-							    </div>
+							    
+							    <form method="GET" action="{{ route('rapports.index') }}" class="row gx-2 align-items-center">
+    <div class="col-auto">
+        <input type="text" name="search" class="form-control" placeholder="Recherche"
+               value="{{ request('search') }}">
+    </div>
+
+    <div class="col-auto">
+        <select name="periode" class="form-select w-auto" onchange="this.form.submit()">
+            <option value="">Tous</option>
+            <option value="mois" {{ request('periode') == 'mois' ? 'selected' : '' }}>Ce mois</option>
+            <option value="annee" {{ request('periode') == 'annee' ? 'selected' : '' }}>Cette année</option>
+        </select>
+    </div>
+
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </div>
+
+    @if(request()->has('search') || request()->has('periode'))
+        <div class="col-auto">
+            <a href="{{ route('rapports.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+        </div>
+    @endif
+</form>
+
+</div><!--//col-->
+
 							    <div class="col-auto">						    
 								    <a class="btn app-btn-secondary" href="{{ route('rapports.create') }}">
 									    <i class="fa fa-folder"> </i>
 									     AJOUTER RAPPORTS
 									</a>
 							    </div>
-						    </div><!--//row-->
+						    </div>
 
 
 							
 
 
-					    </div><!--//table-utilities-->
-				    </div><!--//col-auto-->
-			    </div><!--//row-->
+					    </div>
+				    </div>
+			    </div>
 
 
 				@if (Session::get('success'))
@@ -85,83 +102,61 @@
 </thead>
 
 										<tbody>
+    @forelse ($grouped as $mois => $rapportsDuMois)
+       
 
-                                        @forelse ($rapports as $rapport)
-<tr>
-    <td class="cell">{{ $rapport->id }}</td>
-    <td class="cell">{{ \Carbon\Carbon::parse($rapport->date)->format('d/m/Y') }}</td>
-    <td class="cell">{{ $rapport->activiteGene }}</td>
-    <td class="cell">{{ $rapport->remarque }}</td>
-    <td class="cell">{{ $rapport->nbPres }}</td>
-    <td class="cell">{{ $rapport->visite }}</td>
-    <td class="cell">{{ $rapport->remarqueFait }}</td>
-    <td class="cell">{{ $rapport->kits }}</td>
-    <td class="cell">{{ $rapport->nbPersVisitSem }}</td>
-    <td class="cell">{{ $rapport->nouvelEnreg }}</td>
-    <td class="cell">{{ $rapport->depart }}</td>
-    <td class="cell">{{ $rapport->transfert }}</td>
-    <td class="cell">{{ $rapport->casMaladie }}</td>
-    <td class="cell">{{ $rapport->superviseur }}</td>
-    <td class="cell">
-        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#rapportModal{{ $rapport->id }}">
-    Voir
-</button>
-
-        <a href="{{ route('rapports.edit', $rapport->id) }}" class="btn btn-sm btn-warning">Modifier</a>
-		<a href="{{ route('rapports.pdf', $rapport->id) }}" class="btn btn-sm btn-success">
-    <i class="fa fa-file-pdf"></i> Télécharger PDF
-</a>
-
-        <form action="{{ route('rapports.destroy', $rapport->id) }}" method="POST" class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce rapport ?')">Supprimer</button>
-        </form>
+        <tr>
+    <td colspan="15" class="fw-bold bg-light text-primary">
+        {{ strtoupper($mois) }}
+        <a href="{{ route('rapports.imprimerParMois', ['mois' => $rapportsDuMois->first()->mois, 'annee' => $rapportsDuMois->first()->annee]) }}"
+           class="btn btn-sm btn-outline-primary float-end" target="_blank">
+            <i class="fa fa-print"></i> Imprimer
+        </a>
     </td>
 </tr>
 
-<!-- Modal -->
-<div class="modal fade" id="rapportModal{{ $rapport->id }}" tabindex="-1" aria-labelledby="rapportModalLabel{{ $rapport->id }}" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="rapportModalLabel{{ $rapport->id }}">Détail du Rapport #{{ $rapport->id }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-      </div>
-      <div class="modal-body">
-        <ul class="list-group">
-          <li class="list-group-item"><strong>Date :</strong> {{ $rapport->date }}</li>
-          <li class="list-group-item"><strong>Activité Générale :</strong> {{ $rapport->activiteGene }}</li>
-          <li class="list-group-item"><strong>Remarque :</strong> {{ $rapport->remarque }}</li>
-          <li class="list-group-item"><strong>Présences :</strong> {{ $rapport->nbPres }}</li>
-          <li class="list-group-item"><strong>Visite :</strong> {{ $rapport->visite }}</li>
-          <li class="list-group-item"><strong>Remarques faites :</strong> {{ $rapport->remarqueFait }}</li>
-          <li class="list-group-item"><strong>Kits :</strong> {{ $rapport->kits }}</li>
-          <li class="list-group-item"><strong>Nb personnes visitées :</strong> {{ $rapport->nbPersVisitSem }}</li>
-          <li class="list-group-item"><strong>Nouveaux enregistrés :</strong> {{ $rapport->nouvelEnreg }}</li>
-          <li class="list-group-item"><strong>Départs :</strong> {{ $rapport->depart }}</li>
-          <li class="list-group-item"><strong>Transferts :</strong> {{ $rapport->transfert }}</li>
-          <li class="list-group-item"><strong>Cas maladie :</strong> {{ $rapport->casMaladie }}</li>
-          <li class="list-group-item"><strong>Superviseur :</strong> {{ $rapport->superviseur }}</li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-@empty
-<tr>
-    <td colspan="15" class="text-center">Aucun rapport trouvé.</td>
-</tr>
-@endforelse
+        @foreach ($rapportsDuMois as $rapport)
+            <tr>
+                <td class="cell">{{ $rapport->id }}</td>
+                <td class="cell">{{ \Carbon\Carbon::parse($rapport->date)->format('d/m/Y') }}</td>
+                <td class="cell">{{ $rapport->activiteGene }}</td>
+                <td class="cell">{{ $rapport->remarque }}</td>
+                <td class="cell">{{ $rapport->nbPres }}</td>
+                <td class="cell">{{ $rapport->visite }}</td>
+                <td class="cell">{{ $rapport->remarqueFait }}</td>
+                <td class="cell">{{ $rapport->kits }}</td>
+                <td class="cell">{{ $rapport->nbPersVisitSem }}</td>
+                <td class="cell">{{ $rapport->nouvelEnreg }}</td>
+                <td class="cell">{{ $rapport->depart }}</td>
+                <td class="cell">{{ $rapport->transfert }}</td>
+                <td class="cell">{{ $rapport->casMaladie }}</td>
+                <td class="cell">{{ $rapport->superviseur }}</td>
+                <td class="cell">
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#rapportModal{{ $rapport->id }}">Voir</button>
+                    <a href="{{ route('rapports.edit', $rapport->id) }}" class="btn btn-sm btn-warning">Modifier</a>
+                    <!-- <a href="{{ route('rapports.pdf', $rapport->id) }}" class="btn btn-sm btn-success">
+                        <i class="fa fa-file-pdf"></i>
+                    </a> -->
+                    <form action="{{ route('rapports.destroy', $rapport->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer ce rapport ?')">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
 
+            {{-- Modal --}}
+            @include('rapports.partials.modal', ['rapport' => $rapport])
+        @endforeach
+    @empty
+        <tr>
+            <td colspan="15" class="text-center">Aucun rapport trouvé.</td>
+            
+        </tr>
+    @endforelse
+</tbody>
 
-											
-		
-										</tbody>
 									</table>
 
 									

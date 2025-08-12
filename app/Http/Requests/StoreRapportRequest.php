@@ -23,25 +23,26 @@ class StoreRapportRequest extends FormRequest
     {
         return [
             //
-            'date' => 'required|date',
-            'activiteGene' => 'required|string',
-            'remarque' => 'nullable|string',
-            'nbPres' => 'required|integer|min:0',
-            'visite' => 'required|integer|min:0',
-            'remarqueFait' => 'nullable|string',
-            'kits' => 'nullable|integer|min:0',
-            'nbPersVisitSem' => 'nullable|integer|min:0',
-            'nouvelEnreg' => 'nullable|integer|min:0',
-            'depart' => 'nullable|integer|min:0',
-            'transfert' => 'nullable|integer|min:0',
-            'casMaladie' => 'nullable|integer|min:0',
-            'superviseur' => 'nullable|string|max:255',
+            'date' => 'required|date|unique:rapports,date',
+        'activiteGene' => 'required|string',
+        'remarque' => 'nullable|string',
+        'nbPres' => 'required|integer|min:0',
+        'visite' => 'required|integer|min:0',
+        'remarqueFait' => 'nullable|string',
+        'kits' => 'nullable|integer|min:0',
+        'nbPersVisitSem' => 'nullable|integer|min:0',
+        'nouvelEnreg' => 'nullable|integer|min:0',
+        'depart' => 'nullable|integer|min:0',
+        'transfert' => 'nullable|integer|min:0',
+        'casMaladie' => 'nullable|integer|min:0',
+        'superviseur' => 'nullable|string|max:255',
         ];
     }
 
     public function messages(): array
 {
     return [
+        'date.unique' => 'Un rapport pour cette date existe déjà.',
         'date.required' => 'La date du rapport est obligatoire.',
         'date.date' => 'Le format de la date est invalide.',
 
